@@ -1,3 +1,4 @@
+import argparse
 from os import getenv
 from urllib.parse import urlparse
 
@@ -34,7 +35,7 @@ def count_clicks(token: str, link: str) -> int:
     response = requests.get(url_tempale, params=param)
     response.raise_for_status()
     views = response.json()
-    return views['response']['stats'][0]['views']
+    return f'По вашей ссылке перешли {views['response']['stats'][0]['views']} раз'
 
 
 def is_shorten_link(token: str, url: str) -> bool:
@@ -52,13 +53,21 @@ def is_shorten_link(token: str, url: str) -> bool:
     return 'response' not in short_link
 
 
+def create_parser() -> 'argparse.ArgumentParser':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('link')
+    return parser
+
+
 def main() -> None:
     load_dotenv()
     token = getenv('VK_TOKEN')
-    user_input = input('Enter the link: ')
+    parser = create_parser()
+    parsed_arguments = parser.parse_args()
+    print(parsed_arguments)
     try:
-        check_link = is_shorten_link(token, user_input)
-        query = count_clicks(token, user_input) if check_link else shorten_link(token, user_input)
+        check_link = is_shorten_link(token, parsed_arguments.link)
+        query = count_clicks(token, parsed_arguments.link) if check_link else shorten_link(token, parsed_arguments.link)
         print(query)
     except (requests.exceptions.HTTPError, ValueError, KeyError) as error:
         print(f"Error: {error}")
