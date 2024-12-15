@@ -63,11 +63,10 @@ def main() -> None:
     load_dotenv()
     token = getenv('VK_TOKEN')
     parser = create_parser()
-    parsed_arguments = parser.parse_args()
-    print(parsed_arguments)
+    parsed_args = parser.parse_args()
     try:
-        check_link = is_shorten_link(token, parsed_arguments.link)
-        query = count_clicks(token, parsed_arguments.link) if check_link else shorten_link(token, parsed_arguments.link)
+        check_link = is_shorten_link(token, parsed_args.link)
+        query = count_clicks(token, parsed_args.link) if check_link else shorten_link(token, parsed_args.link)
         print(query)
     except (requests.exceptions.HTTPError, ValueError, KeyError) as error:
         print(f"Error: {error}")
